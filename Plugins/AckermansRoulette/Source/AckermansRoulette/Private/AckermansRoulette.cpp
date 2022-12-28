@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DirectionalLight.h"
 #include "Components/LightComponent.h"
-#include "Engine/PostProcessVolume.h"
+#include "Engine/StaticMeshActor.h"
 
 static const FName AckermansRouletteTabName("AckermansRoulette");
 
@@ -50,38 +50,12 @@ void FAckermansRouletteModule::ShutdownModule()
 void FAckermansRouletteModule::PluginButtonClicked()
 {
 	// Put your "OnButtonClicked" stuff here
-	FText DialogText = FText::FromString("Changing scene to Night");
-	FMessageDialog::Open(EAppMsgType::Ok, DialogText);
-	AActor* FoundActor;
+        AActor* SMesh;
 
-	FoundActor = FindActor(ADirectionalLight::StaticClass());
-
-	if (FoundActor)
-	{
-		ADirectionalLight* Sun = Cast<ADirectionalLight>(FoundActor);
-		Sun->GetLightComponent()->SetIntensity(1.f);
-	}
-
-	FoundActor = FindActor(APostProcessVolume::StaticClass());
-
-	 APostProcessVolume* PPVol;
-
-	
-
-	if (!FoundActor)
-	{
-		DialogText = FText::FromString("PostProcessVolume Not Found, Creating One");
+		FText DialogText = FText::FromString("Static Mesh Actor Not Found, Creating One");
 		FMessageDialog::Open(EAppMsgType::Ok, DialogText);
-		FoundActor = AddActor(APostProcessVolume::StaticClass());
-	}
+		SMesh = AddActor(AStaticMeshActor::StaticClass());
 
-	PPVol = Cast<APostProcessVolume>(FoundActor);
-
-	PPVol->Settings.AutoExposureBias = -3.f;
-
-	PPVol->Settings.bOverride_AutoExposureBias = true;
-
-	PPVol->bUnbound = true;
 }
 
 void FAckermansRouletteModule::RegisterMenus()
