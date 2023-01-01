@@ -4,9 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "Http.h"
+#include "Engine/DataTable.h"
 
 class FToolBarBuilder;
 class FMenuBuilder;
+class DataTable;
+
+/*USTRUCT(BlueprintType)
+struct FDieWasserspinne : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TAssetPtr<USkeletalMeshComponent> SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 numberForStaticMesh;
+}; */
 
 class FAckermansRouletteModule : public IModuleInterface
 {
@@ -18,6 +33,9 @@ public:
 	
 	/** This function will be bound to Command. */
 	void PluginButtonClicked();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
+		class UDataTable* noOfMeshDataTable;
 	
 private:
 
@@ -27,4 +45,5 @@ private:
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
+      void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
 };
