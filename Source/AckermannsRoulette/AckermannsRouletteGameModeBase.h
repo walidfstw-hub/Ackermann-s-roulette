@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Http.h"
 #include "AckermannsRouletteGameModeBase.generated.h"
+
 
 /**
  * 
@@ -14,4 +16,10 @@ class ACKERMANNSROULETTE_API AAckermannsRouletteGameModeBase : public AGameModeB
 {
 	GENERATED_BODY()
 	
+public:
+
+	virtual void StartPlay() override;
+
+private:
+
 };

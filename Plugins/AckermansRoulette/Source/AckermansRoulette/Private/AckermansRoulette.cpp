@@ -9,6 +9,13 @@
 #include "Engine/DirectionalLight.h"
 #include "Components/LightComponent.h"
 #include "Engine/StaticMeshActor.h"
+#include "Json.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Templates/SharedPointer.h"
+#include "HttpModule.h"
+#include "Json.h"
+#include "UObject/ConstructorHelpers.h"
+
 
 static const FName AckermansRouletteTabName("AckermansRoulette");
 
@@ -17,7 +24,8 @@ static const FName AckermansRouletteTabName("AckermansRoulette");
 void FAckermansRouletteModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
+
+
 	FAckermansRouletteStyle::Initialize();
 	FAckermansRouletteStyle::ReloadTextures();
 
@@ -31,6 +39,7 @@ void FAckermansRouletteModule::StartupModule()
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FAckermansRouletteModule::RegisterMenus));
+
 }
 
 void FAckermansRouletteModule::ShutdownModule()
@@ -50,12 +59,21 @@ void FAckermansRouletteModule::ShutdownModule()
 void FAckermansRouletteModule::PluginButtonClicked()
 {
 	// Put your "OnButtonClicked" stuff here
-        AActor* SMesh;
+	
+	// HTTP Request Code Here
+	UE_LOG(LogTemp, Display, TEXT("Came here !!"));
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+	Request->OnProcessRequestComplete().BindRaw(this, &FAckermansRouletteModule::OnResponseReceived);
+	Request->SetURL("http://www.randomnumberapi.com/api/v1.0/random?min=0&max=10&count=1");
+	Request->SetVerb("GET");
+	Request->ProcessRequest();
 
-		FText DialogText = FText::FromString("Static Mesh Actor Not Found, Creating One");
+	// HTTP Request Code Ends Here
+
+        AActor* SMesh;
+		FText DialogText = FText::FromString("Static Mesh Actor will be Generated !");
 		FMessageDialog::Open(EAppMsgType::Ok, DialogText);
 		SMesh = AddActor(AStaticMeshActor::StaticClass());
-
 }
 
 void FAckermansRouletteModule::RegisterMenus()
@@ -105,6 +123,12 @@ AActor* FAckermansRouletteModule::AddActor(TSubclassOf<AActor> ActorClass)
 	GEditor->AddActor(Level, ActorClass, FTransform());
 
 	return nullptr;
+}
+
+void FAckermansRouletteModule::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+{
+	// FString Responsed = *Response->GetContentAsString();
+	UE_LOG(LogTemp, Display, TEXT("Response %s"), *Response->GetContentAsString());
 }
 
 #undef LOCTEXT_NAMESPACE
